@@ -1,4 +1,4 @@
-package com.shopping.web;
+package com.shopping.backend.web;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
