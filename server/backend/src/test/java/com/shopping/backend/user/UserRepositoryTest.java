@@ -32,4 +32,18 @@ public class UserRepositoryTest {
 
         Assertions.assertThat(savedUser.getId()).isGreaterThan(0);
     }
+
+    @Test
+    public void createUserWithManyRolesTest() {
+        Role roleShipper = entityManager.find(Role.class, 4);
+        Role roleEditor = entityManager.find(Role.class, 3);
+
+        User newUser = new User("aaaa@gmail.com", "1234", "역할테스트유저");
+        newUser.addRole(roleShipper);
+        newUser.addRole(roleEditor);
+
+        User savedUser = repo.save(newUser);
+
+        Assertions.assertThat(savedUser.getId()).isGreaterThan(0);
+    }
 }
