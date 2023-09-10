@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge"> <!-- IE 호환성 보기 설정 -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0"> <!-- 반응형 웹 설정 -->
-    <title>백엔드 서버 인덱스 페이지</title>
+    <title>SOMNWAL SHOP | 사용자 관리</title>
 
     <link rel="stylesheet" th:href="@{/webjars/bootstrap/css/bootstrap.min.css}">
     <script type="text/javascript" th:src="@{/webjars/jquery/jquery.min.js}"></script>
@@ -15,11 +15,19 @@
     <th:block th:include="component/navbar"></th:block>
 
     <div class="container-fluid">
-        <div>
+        <div class="mb-3">
             <h1>사용자 관리</h1>
         </div>
 
+        <!-- 메시지 표시 영역 -->
+        <div th:if="${message != null}" class="alert alert-success text-center">
+            [[${message}]]
+        </div>
+
         <div>
+            <div class="text-right mb-2 ">
+                <a class="btn btn-primary" th:href="@{/users/add}">사용자 추가</a>
+            </div>
             <table class="table table-bordered table-hover table-responsive-xl">
                 <thead class="thead-dark">
                     <tr>
@@ -28,7 +36,7 @@
                         <th>이름</th>
                         <th>이메일</th>
                         <th>역할</th>
-                        <th>상태</th>
+                        <th>활성화</th>
                         <th></th>
                     </tr>
                 </thead>
