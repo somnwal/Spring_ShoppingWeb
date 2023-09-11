@@ -38,8 +38,24 @@ public class UserService {
     }
 
     public void save(User user) {
-        encodePassword(user);
+
+        if (user.getId() != null) {
+            User existingUser = userRepository.findById(user.getId()).get();
+
+            if(user.getPassword().isEmpty()) {
+                user.setPassword(existingUser.getPassword());
+            } else {
+                encodePassword(user);
+            }
+        } else {
+            encodePassword(user);
+        }
+
         userRepository.save(user);
+    }
+
+    public void deleteUser(Long id) {
+        userRepository.deleteById(id);
     }
 
     public boolean isEmailExists(Long id, String email) {
