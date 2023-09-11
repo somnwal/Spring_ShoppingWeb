@@ -6,9 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0"> <!-- 반응형 웹 설정 -->
     <title>SOMNWAL SHOP | 사용자 관리</title>
 
-    <link rel="stylesheet" th:href="@{/webjars/bootstrap/css/bootstrap.min.css}">
-    <script type="text/javascript" th:src="@{/webjars/jquery/jquery.min.js}"></script>
-    <script type="text/javascript" th:src="@{/webjars/bootstrap/js/bootstrap.min.js}"></script>
+    <th:block th:include="component/common"></th:block>
 </head>
 <body>
     <!-- 네비게이션 바 -->
@@ -43,13 +41,23 @@
                 <tbody>
                     <tr th:each="user : ${users}">
                         <td>[[${user.id}]]</td>
-                        <td></td>
+                        <td class="text-center">
+                            <span class="fas fa-portrait fa-2x"></span>
+                        </td>
                         <td>[[${user.name}]]</td>
                         <td>[[${user.email}]]</td>
                         <td>[[${user.roles}]]</td>
-                        <td>[[${user.enabled}]]</td>
+                        <td class="text-center">
+                            <div th:if="${user.enabled == true}">
+                                <span class="fas fa-check-circle fa-2x" style="color: green"></span>
+                            </div>
+                            <div th:if="${user.enabled == false}">
+                                <span class="fas fa-check-circle fa-2x" style="color: grey"></span>
+                            </div>
+                        </td>
                         <td>
-                            수정 삭제
+                            <a class="btn btn-warning" th:href="@{'/users/edit/' + ${user.id}}"><span class="fas fa-edit"></span>수정</a>
+                            <a class="btn btn-danger"><span class="fas fa-trash"></span>삭제</a>
                         </td>
                     </tr>
                 </tbody>
