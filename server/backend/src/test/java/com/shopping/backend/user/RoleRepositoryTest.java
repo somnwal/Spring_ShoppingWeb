@@ -1,6 +1,7 @@
 package com.shopping.backend.user;
 
 import com.shopping.entity.Role;
+import com.shopping.backend.user.RoleRepository;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

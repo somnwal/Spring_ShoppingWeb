@@ -2,6 +2,7 @@ package com.shopping.backend.user;
 
 import com.shopping.entity.Role;
 import com.shopping.entity.User;
+import com.shopping.backend.user.UserRepository;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

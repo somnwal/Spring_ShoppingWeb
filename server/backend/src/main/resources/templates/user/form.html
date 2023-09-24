@@ -91,7 +91,7 @@
     <script type="text/javascript">
         $(document).ready(() => {
             $("#fileImage").change(function() {
-                showImageThumbnail();
+                showImageThumbnail(this);
             });
         });
 
@@ -99,7 +99,11 @@
             var file = fileInput.files[0];
             var reader = new FileReader();
 
-            reader.onload = function
+            reader.onload = function(e) {
+                $("#thumbnail").attr("src", e.target.result);
+            };
+
+            reader.readAsDataURL(file);
         }
 
         function checkEmail(form) {
