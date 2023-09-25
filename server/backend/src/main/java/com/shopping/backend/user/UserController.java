@@ -1,16 +1,17 @@
 package com.shopping.backend.user;
 
+import com.shopping.backend.util.FileUploadUtil;
 import com.shopping.entity.Role;
 import com.shopping.entity.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.util.StringUtils;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.io.IOException;
 import java.util.List;
 
 @Controller
@@ -45,8 +46,17 @@ public class UserController {
     }
 
     @PostMapping("/addP")
-    public String addUserP(User user, RedirectAttributes redirectAttributes) {
-        service.save(user);
+    public String addUserP(User user, RedirectAttributes redirectAttributes, @RequestParam("image")MultipartFile multipartFile) throws IOException {
+
+        if(!multipartFile.isEmpty()) {
+            String fileName = StringUtils.cleanPath(multipartFile.getOriginalFilename());
+            user.setPhoto(fileName);
+
+            User savedUser = service.save(user);
+
+            String uploadDir = "user-photos/" + savedUser.getId();
+            FileUploadUtil.saveFile(uploadDir, fileName, multipartFile);
+        }
 
         redirectAttributes.addFlashAttribute("message", "성공적으로 저장되었습니다.");
 
