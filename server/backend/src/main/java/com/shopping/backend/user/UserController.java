@@ -4,6 +4,7 @@ import com.shopping.backend.util.FileUploadUtil;
 import com.shopping.entity.Role;
 import com.shopping.entity.User;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
@@ -25,8 +26,28 @@ public class UserController {
 
     @GetMapping
     public String getUsers(Model model) {
-        List<User> users = service.getUsers();
+        return getUsersByPaging(1, model);
+    }
 
+    @GetMapping("/page/{pageNum}")
+    public String getUsersByPaging(@PathVariable(name="pageNum") int pageNum, Model model) {
+        Page<User> page = service.getUsersByPaging(pageNum);
+
+        List<User> users = page.getContent();
+
+        long startCount = (pageNum - 1) * UserService.PAGE_SIZE + 1;
+        long endCount = startCount + UserService.PAGE_SIZE - 1;
+
+        if( endCount > page.getTotalElements() ) {
+            endCount = page.getTotalElements();
+        }
+
+        model.addAttribute("pageNum", pageNum);
+        model.addAttribute("maxPageNum", page.getTotalPages());
+
+        model.addAttribute("startCount", startCount);
+        model.addAttribute("endCount", endCount);
+        model.addAttribute("ttcn", page.getTotalElements());
         model.addAttribute("users", users);
 
         return templatePath + "/users";
@@ -55,7 +76,14 @@ public class UserController {
             User savedUser = service.save(user);
 
             String uploadDir = "user-photos/" + savedUser.getId();
+
+            FileUploadUtil.cleanDir(uploadDir);
             FileUploadUtil.saveFile(uploadDir, fileName, multipartFile);
+        } else {
+            if (user.getPhoto().isEmpty()) {
+                user.setPhoto(null);
+                service.save(user);
+            }
         }
 
         redirectAttributes.addFlashAttribute("message", "성공적으로 저장되었습니다.");

@@ -4,6 +4,9 @@ import com.shopping.backend.user.exception.UserNotFoundException;
 import com.shopping.entity.Role;
 import com.shopping.entity.User;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -11,6 +14,8 @@ import java.util.List;
 
 @Service
 public class UserService {
+
+   public static final int PAGE_SIZE = 4;
 
     @Autowired
     private UserRepository userRepository;
@@ -23,6 +28,12 @@ public class UserService {
 
     public List<User> getUsers() {
         return (List<User>) userRepository.findAll();
+    }
+
+    public Page<User> getUsersByPaging(int pageNum) {
+        Pageable pagable = PageRequest.of(pageNum - 1, PAGE_SIZE);
+
+        return userRepository.findAll(pagable);
     }
 
     public User getUser(Long id) throws UserNotFoundException {

@@ -9,7 +9,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.test.annotation.Rollback;
+
+import java.util.List;
 
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
@@ -46,5 +51,20 @@ public class UserRepositoryTest {
         User savedUser = repo.save(newUser);
 
         Assertions.assertThat(savedUser.getId()).isGreaterThan(0);
+    }
+
+    @Test
+    public void showUserListFirstPageTest() {
+        int pageNumber = 0;
+        int pageSize = 4;
+
+        Pageable pageable = PageRequest.of(pageNumber, pageSize);
+        Page<User> page = repo.findAll(pageable);
+
+        List<User> userList = page.getContent();
+
+        userList.forEach(user -> System.out.println(user));
+
+        Assertions.assertThat(userList.size()).isEqualTo(pageSize);
     }
 }

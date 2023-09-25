@@ -69,6 +69,29 @@
                 </tbody>
             </table>
         </div>
+
+        <div class="text-center m-1" th:if="${ttcn > 0}">
+            <span>현재 사용자 : [[${startCount}]] ~ [[${endCount}]]&emsp;|&emsp;전체 사용자 : [[${ttcn}]]</span>
+        </div>
+        <div class="text-center m-1" th:if="${ttcn <= 0}">
+            <span>사용자가 없습니다.</span>
+        </div>
+
+        <div>
+            <nav>
+                <ul class="justify-content-center pagination mt-3">
+                    <li class="page-item"><a class="page-link" th:href="@{/users/page/1}">맨 앞</a></li>
+                    <li class="page-item"><a class="page-link" th:href="@{'/users/page/' + ${pageNum - 1}}">이전</a></li>
+
+                    <li th:class="${pageNum != i ? 'page-item' : 'page-item active'}" th:each="i : ${#numbers.sequence(1, maxPageNum)}">
+                        <a class="page-link" th:href="@{'/users/page/' + ${i}}">[[${i}]]</a>
+                    </li>
+
+                    <li class="page-item"><a class="page-link" th:href="@{'/users/page/' + ${pageNum + 1}}">다음</a></li>
+                    <li class="page-item"><a class="page-link" th:href="@{'/users/page/' + ${maxPageNum}}">맨 뒤</a></li>
+                </ul>
+            </nav>
+        </div>
     </div>
 
     <!-- Confirm 모달 -->

@@ -25,4 +25,22 @@ public class FileUploadUtil {
             e.printStackTrace();
         }
     }
+
+    public static void cleanDir(String dir) {
+        Path dirPath = Paths.get(dir);
+
+        try {
+            Files.list(dirPath).forEach(file -> {
+                if(!Files.isDirectory(file)) {
+                    try {
+                        Files.delete(file);
+                    } catch (IOException e) {
+                        System.out.println("파일 삭제 불가 : " + file);
+                    }
+                }
+            });
+        } catch (IOException e) {
+            System.out.println("디렉토리 삭제 불가 : " + dirPath);
+        }
+    }
 }
