@@ -80,15 +80,25 @@
         <div>
             <nav>
                 <ul class="justify-content-center pagination mt-3">
-                    <li class="page-item"><a class="page-link" th:href="@{/users/page/1}">맨 앞</a></li>
-                    <li class="page-item"><a class="page-link" th:href="@{'/users/page/' + ${pageNum - 1}}">이전</a></li>
+                    <li th:class="${ pageNum > 1 ? 'page-item' : 'page-item disabled'}">
+                        <a class="page-link" th:href="@{/users/page/1}">맨 앞</a>
+                    </li>
+                    <li th:class="${ pageNum > 1 ? 'page-item' : 'page-item disabled'}">
+                        <a class="page-link" th:href="@{'/users/page/' + ${pageNum - 1}}">이전</a>
+                    </li>
+
 
                     <li th:class="${pageNum != i ? 'page-item' : 'page-item active'}" th:each="i : ${#numbers.sequence(1, maxPageNum)}">
                         <a class="page-link" th:href="@{'/users/page/' + ${i}}">[[${i}]]</a>
                     </li>
 
-                    <li class="page-item"><a class="page-link" th:href="@{'/users/page/' + ${pageNum + 1}}">다음</a></li>
-                    <li class="page-item"><a class="page-link" th:href="@{'/users/page/' + ${maxPageNum}}">맨 뒤</a></li>
+
+                    <li th:class="${ pageNum < maxPageNum ? 'page-item' : 'page-item disabled'}">
+                        <a class="page-link" th:href="@{'/users/page/' + ${pageNum + 1}}">다음</a>
+                    </li>
+                    <li th:class="${ pageNum < maxPageNum ? 'page-item' : 'page-item disabled'}">
+                        <a class="page-link" th:href="@{'/users/page/' + ${maxPageNum}}">맨 뒤</a>
+                    </li>
                 </ul>
             </nav>
         </div>
