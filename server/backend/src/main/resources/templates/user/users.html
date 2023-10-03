@@ -27,20 +27,101 @@
             [[${error}]]
         </div>
 
-        <div>
-            <div class="text-right mb-2 ">
-                <a class="btn btn-primary" th:href="@{/users/add}">사용자 추가</a>
+        <!-- 상단 툴 영역 -->
+        <div class="row mb-2 mt-5">
+            <div class="col-8">
+                <!-- 검색창 영역 -->
+                <div>
+                    <form th:action="@{/users/page/1}" class="form-inline">
+
+                        <input type="hidden" name="sortField" th:value="${sortField}" />
+                        <input type="hidden" name="sortDir" th:value="${sortDir}" />
+
+                        <input type="search" class="form-control" name="keyword" th:value="${keyword}" />
+                        &nbsp;&nbsp;
+                        <input type="submit" value="검색" class="btn btn-primary" />
+                    </form>
+                </div>
             </div>
+            <div class="col-4">
+                <div class="text-right">
+                    <a class="btn btn-primary" th:href="@{/users/add}">사용자 추가</a>
+                </div>
+            </div>
+        </div>
+
+
+
+        <div>
             <table class="table table-bordered table-hover table-responsive-xl">
                 <thead class="thead-dark">
                     <tr>
-                        <th>ID</th>
+                        <th>
+                            <a th:if="${sortField != 'id'}" class="text-white"
+                               th:href="@{'/users/page/' + ${pageNum} + '?sortField=id&sortDir=' + ${sortDir} + ${keyword != null ? '&keyword=' + keyword : ''}}">
+                                ID
+                            </a>
+                            <a th:if="${sortField == 'id'}" class="text-white"
+                               th:href="@{'/users/page/' + ${pageNum} + '?sortField=id&sortDir=' + ${reverseSortDir} + ${keyword != null ? '&keyword=' + keyword : ''}}">
+                                ID
+                            </a>
+
+                            <span th:if="${sortField == 'id'}"
+                                  th:class="${sortDir == 'asc' ? 'fas fa-sort-up' : 'fas fa-sort-down'}">
+                            </span>
+                        </th>
+
                         <th>사진</th>
-                        <th>이름</th>
-                        <th>이메일</th>
-                        <th>역할</th>
-                        <th>활성화</th>
-                        <th></th>
+
+                        <th>
+                            <a th:if="${sortField != 'name'}" class="text-white"
+                                th:href="@{'/users/page/' + ${pageNum} + '?sortField=name&sortDir=' + ${sortDir} + ${keyword != null ? '&keyword=' + keyword : ''}}">
+                                이름
+                            </a>
+                            <a th:if="${sortField == 'name'}" class="text-white"
+                               th:href="@{'/users/page/' + ${pageNum} + '?sortField=name&sortDir=' + ${reverseSortDir} + ${keyword != null ? '&keyword=' + keyword : ''}}">
+                                이름
+                            </a>
+
+                            <span th:if="${sortField == 'name'}"
+                                  th:class="${sortDir == 'asc' ? 'fas fa-sort-up' : 'fas fa-sort-down'}">
+                            </span>
+                        </th>
+
+                        <th>
+                            <a th:if="${sortField != 'email'}" class="text-white"
+                               th:href="@{'/users/page/' + ${pageNum} + '?sortField=email&sortDir=' + ${sortDir} + ${keyword != null ? '&keyword=' + keyword : ''}}">
+                                이메일
+                            </a>
+                            <a th:if="${sortField == 'email'}" class="text-white"
+                               th:href="@{'/users/page/' + ${pageNum} + '?sortField=email&sortDir=' + ${reverseSortDir} + ${keyword != null ? '&keyword=' + keyword : ''}}">
+                                이메일
+                            </a>
+
+                            <span th:if="${sortField == 'email'}"
+                                  th:class="${sortDir == 'asc' ? 'fas fa-sort-up' : 'fas fa-sort-down'}">
+                            </span>
+                        </th>
+
+                        <th>
+                           역할
+                        </th>
+
+                        <th>
+                            <a th:if="${sortField != 'enabled'}" class="text-white"
+                               th:href="@{'/users/page/' + ${pageNum} + '?sortField=enabled&sortDir=' + ${sortDir} + ${keyword != null ? '&keyword=' + keyword : ''}}">
+                                활성화
+                            </a>
+                            <a th:if="${sortField == 'enabled'}" class="text-white"
+                               th:href="@{'/users/page/' + ${pageNum} + '?sortField=enabled&sortDir=' + ${reverseSortDir} + ${keyword != null ? '&keyword=' + keyword : ''}}">
+                                활성화
+                            </a>
+
+                            <span th:if="${sortField == 'enabled'}"
+                                  th:class="${sortDir == 'asc' ? 'fas fa-sort-up' : 'fas fa-sort-down'}">
+                            </span>
+                        </th>
+                        <th>작업</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -55,10 +136,10 @@
                         <td>[[${user.roles}]]</td>
                         <td class="text-center">
                             <div th:if="${user.enabled == true}">
-                                <span class="fas fa-check-circle" style="color: green"></span>
+                                <span class="fas fa-check-circle fa-2x" style="color: green"></span>
                             </div>
                             <div th:if="${user.enabled == false}">
-                                <span class="fas fa-check-circle" style="color: grey"></span>
+                                <span class="fas fa-check-circle fa-2x" style="color: grey"></span>
                             </div>
                         </td>
                         <td>
@@ -72,35 +153,35 @@
 
         <div class="text-center m-1" th:if="${ttcn > 0}">
             <span>현재 사용자 : [[${startCount}]] ~ [[${endCount}]]&emsp;|&emsp;전체 사용자 : [[${ttcn}]]</span>
+
+            <div>
+                <nav>
+                    <ul class="justify-content-center pagination mt-3">
+                        <li th:class="${ pageNum > 1 ? 'page-item' : 'page-item disabled'}">
+                            <a class="page-link" th:href="@{'/users/page/1' + '?sortField=' + ${sortField} + '&sortDir=' + ${sortDir} + ${keyword != null ? '&keyword=' + keyword : ''}}">맨 앞</a>
+                        </li>
+                        <li th:class="${ pageNum > 1 ? 'page-item' : 'page-item disabled'}">
+                            <a class="page-link" th:href="@{'/users/page/' + ${pageNum - 1} + '?sortField=' + ${sortField} + '&sortDir=' + ${sortDir} + ${keyword != null ? '&keyword=' + keyword : ''}}">이전</a>
+                        </li>
+
+
+                        <li th:class="${pageNum != i ? 'page-item' : 'page-item active'}" th:each="i : ${#numbers.sequence(1, maxPageNum)}">
+                            <a class="page-link" th:href="@{'/users/page/' + ${i} + '?sortField=' + ${sortField} + '&sortDir=' + ${sortDir} + ${keyword != null ? '&keyword=' + keyword : ''}}">[[${i}]]</a>
+                        </li>
+
+
+                        <li th:class="${ pageNum < maxPageNum ? 'page-item' : 'page-item disabled'}">
+                            <a class="page-link" th:href="@{'/users/page/' + ${pageNum + 1} + '?sortField=' + ${sortField} + '&sortDir=' + ${sortDir} + ${keyword != null ? '&keyword=' + keyword : ''}}">다음</a>
+                        </li>
+                        <li th:class="${ pageNum < maxPageNum ? 'page-item' : 'page-item disabled'}">
+                            <a class="page-link" th:href="@{'/users/page/' + ${maxPageNum} + '?sortField=' + ${sortField} + '&sortDir=' + ${sortDir} + ${keyword != null ? '&keyword=' + keyword : ''}}">맨 뒤</a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
         </div>
         <div class="text-center m-1" th:if="${ttcn <= 0}">
             <span>사용자가 없습니다.</span>
-        </div>
-
-        <div>
-            <nav>
-                <ul class="justify-content-center pagination mt-3">
-                    <li th:class="${ pageNum > 1 ? 'page-item' : 'page-item disabled'}">
-                        <a class="page-link" th:href="@{/users/page/1}">맨 앞</a>
-                    </li>
-                    <li th:class="${ pageNum > 1 ? 'page-item' : 'page-item disabled'}">
-                        <a class="page-link" th:href="@{'/users/page/' + ${pageNum - 1}}">이전</a>
-                    </li>
-
-
-                    <li th:class="${pageNum != i ? 'page-item' : 'page-item active'}" th:each="i : ${#numbers.sequence(1, maxPageNum)}">
-                        <a class="page-link" th:href="@{'/users/page/' + ${i}}">[[${i}]]</a>
-                    </li>
-
-
-                    <li th:class="${ pageNum < maxPageNum ? 'page-item' : 'page-item disabled'}">
-                        <a class="page-link" th:href="@{'/users/page/' + ${pageNum + 1}}">다음</a>
-                    </li>
-                    <li th:class="${ pageNum < maxPageNum ? 'page-item' : 'page-item disabled'}">
-                        <a class="page-link" th:href="@{'/users/page/' + ${maxPageNum}}">맨 뒤</a>
-                    </li>
-                </ul>
-            </nav>
         </div>
     </div>
 

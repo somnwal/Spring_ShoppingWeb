@@ -5,6 +5,7 @@ import com.shopping.entity.Role;
 import com.shopping.entity.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
@@ -14,6 +15,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Objects;
 
 @Controller
 @RequestMapping("/users")
@@ -26,21 +28,27 @@ public class UserController {
 
     @GetMapping
     public String getUsers(Model model) {
-        return getUsersByPaging(1, model);
+        return getUsersByPaging(1, model, "name", "asc", null);
     }
 
     @GetMapping("/page/{pageNum}")
-    public String getUsersByPaging(@PathVariable(name="pageNum") int pageNum, Model model) {
-        Page<User> page = service.getUsersByPaging(pageNum);
+    public String getUsersByPaging(@PathVariable(name="pageNum") int pageNum, Model model,
+                                   @Param("sortField") String sortField,
+                                   @Param("sortDir") String sortDir,
+                                   @Param("keyword") String keyword) {
+
+        Page<User> page = service.getUsersByPaging(pageNum, sortField, sortDir, keyword);
 
         List<User> users = page.getContent();
 
-        long startCount = (pageNum - 1) * UserService.PAGE_SIZE + 1;
+        long startCount = (long) (pageNum - 1) * UserService.PAGE_SIZE + 1;
         long endCount = startCount + UserService.PAGE_SIZE - 1;
 
         if( endCount > page.getTotalElements() ) {
             endCount = page.getTotalElements();
         }
+
+        String reverseSortDir = sortDir.equals("asc") ? "desc" : "asc";
 
         model.addAttribute("pageNum", pageNum);
         model.addAttribute("maxPageNum", page.getTotalPages());
@@ -49,6 +57,12 @@ public class UserController {
         model.addAttribute("endCount", endCount);
         model.addAttribute("ttcn", page.getTotalElements());
         model.addAttribute("users", users);
+
+        model.addAttribute("sortField", sortField);
+        model.addAttribute("sortDir", sortDir);
+        model.addAttribute("reverseSortDir", reverseSortDir);
+
+        model.addAttribute("keyword", keyword);
 
         return templatePath + "/users";
     }
@@ -70,9 +84,9 @@ public class UserController {
     public String addUserP(User user, RedirectAttributes redirectAttributes, @RequestParam("image")MultipartFile multipartFile) throws IOException {
 
         if(!multipartFile.isEmpty()) {
-            String fileName = StringUtils.cleanPath(multipartFile.getOriginalFilename());
-            user.setPhoto(fileName);
+            String fileName = StringUtils.cleanPath(Objects.requireNonNull(multipartFile.getOriginalFilename()));
 
+            user.setPhoto(fileName);
             User savedUser = service.save(user);
 
             String uploadDir = "user-photos/" + savedUser.getId();
@@ -82,9 +96,12 @@ public class UserController {
         } else {
             if (user.getPhoto().isEmpty()) {
                 user.setPhoto(null);
-                service.save(user);
             }
+
+            service.save(user);
         }
+
+        System.out.println(user);
 
         redirectAttributes.addFlashAttribute("message", "성공적으로 저장되었습니다.");
 
@@ -97,6 +114,9 @@ public class UserController {
                            RedirectAttributes redirectAttributes) {
         try {
             User user = service.getUser(id);
+
+            System.out.println(user);
+
             List<Role> roles = service.getRoles();
 
             model.addAttribute("title", "사용자 편집");

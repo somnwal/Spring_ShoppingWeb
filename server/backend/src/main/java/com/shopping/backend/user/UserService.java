@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -30,10 +31,20 @@ public class UserService {
         return (List<User>) userRepository.findAll();
     }
 
-    public Page<User> getUsersByPaging(int pageNum) {
-        Pageable pagable = PageRequest.of(pageNum - 1, PAGE_SIZE);
+    public Page<User> getUsersByPaging(int pageNum, String sortField, String sortDir, String keyword) {
 
-        return userRepository.findAll(pagable);
+        Sort sort = Sort.by(sortField);
+        sort = sortDir.equals("asc") ? sort.ascending() : sort.descending();
+
+        Pageable pageable = PageRequest.of(pageNum - 1, PAGE_SIZE, sort);
+
+        System.out.println(keyword);
+
+        if (keyword != null) {
+            return userRepository.findAll(keyword, pageable);
+        } else {
+            return userRepository.findAll(pageable);
+        }
     }
 
     public User getUser(Long id) throws UserNotFoundException {
